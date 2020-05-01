@@ -1,87 +1,410 @@
-﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="15.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
-  <PropertyGroup>
-    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
-    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{D3E597FF-A4AA-4F3E-898A-4D8B903BF4BA}</ProjectGuid>
-    <OutputType>WinExe</OutputType>
-    <RootNamespace>AlexDenmanCoursework</RootNamespace>
-    <AssemblyName>AlexDenmanCoursework</AssemblyName>
-    <TargetFrameworkVersion>v4.7.2</TargetFrameworkVersion>
-    <FileAlignment>512</FileAlignment>
-    <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
-    <Deterministic>true</Deterministic>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugSymbols>true</DebugSymbols>
-    <DebugType>full</DebugType>
-    <Optimize>false</Optimize>
-    <OutputPath>bin\Debug\</OutputPath>
-    <DefineConstants>DEBUG;TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
-    <PlatformTarget>AnyCPU</PlatformTarget>
-    <DebugType>pdbonly</DebugType>
-    <Optimize>true</Optimize>
-    <OutputPath>bin\Release\</OutputPath>
-    <DefineConstants>TRACE</DefineConstants>
-    <ErrorReport>prompt</ErrorReport>
-    <WarningLevel>4</WarningLevel>
-  </PropertyGroup>
-  <ItemGroup>
-    <Reference Include="MySql.Data, Version=8.0.19.0, Culture=neutral, PublicKeyToken=c5687fc88969c44d, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\..\Downloads\MySql.Data.DLL</HintPath>
-    </Reference>
-    <Reference Include="System" />
-    <Reference Include="System.Core" />
-    <Reference Include="System.Xml.Linq" />
-    <Reference Include="System.Data.DataSetExtensions" />
-    <Reference Include="Microsoft.CSharp" />
-    <Reference Include="System.Data" />
-    <Reference Include="System.Deployment" />
-    <Reference Include="System.Drawing" />
-    <Reference Include="System.Net.Http" />
-    <Reference Include="System.Windows.Forms" />
-    <Reference Include="System.Xml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Form1.cs">
-      <SubType>Form</SubType>
-    </Compile>
-    <Compile Include="Form1.Designer.cs">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </Compile>
-    <Compile Include="Program.cs" />
-    <Compile Include="Properties\AssemblyInfo.cs" />
-    <EmbeddedResource Include="Form1.resx">
-      <DependentUpon>Form1.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
-      <LastGenOutput>Resources.Designer.cs</LastGenOutput>
-      <SubType>Designer</SubType>
-    </EmbeddedResource>
-    <Compile Include="Properties\Resources.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Resources.resx</DependentUpon>
-    </Compile>
-    <None Include="Properties\Settings.settings">
-      <Generator>SettingsSingleFileGenerator</Generator>
-      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
-    </None>
-    <Compile Include="Properties\Settings.Designer.cs">
-      <AutoGen>True</AutoGen>
-      <DependentUpon>Settings.settings</DependentUpon>
-      <DesignTimeSharedInput>True</DesignTimeSharedInput>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <None Include="App.config" />
-  </ItemGroup>
-  <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-</Project>
+using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Data;
+using System.Drawing;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using System.Windows.Forms;
+using MySql.Data.MySqlClient;
+
+
+
+namespace AlexDenmanCoursework
+{
+    public partial class Form1 : Form
+    {
+        string UserName;
+        string QueryString;
+
+        public Form1()
+        {
+            InitializeComponent();
+        }
+
+        private void Form1_Load(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonUser_Click(object sender, EventArgs e)
+        {
+            QueryString = ".users";
+            FillDGV();
+            domainUpDownSelect.Items.Clear();
+            domainUpDownSelect.Items.Add("UserID");
+            domainUpDownSelect.Items.Add("first_name");
+            domainUpDownSelect.Items.Add("last_name");
+            domainUpDownSelect.Items.Add("gender");
+            domainUpDownSelect.Items.Add("hometown");
+            domainUpDownSelect.Items.Add("LocationID");
+
+            domainUpDownUpdate.Items.Clear();
+            domainUpDownUpdate.Items.Add("");
+            domainUpDownUpdate.Items.Add("first_name");
+            domainUpDownUpdate.Items.Add("last_name");
+            domainUpDownUpdate.Items.Add("gender");
+            domainUpDownUpdate.Items.Add("hometown");
+            domainUpDownUpdate.Items.Add("LocationID");
+
+            buttonAdd.Enabled = false;
+            buttonDelete.Enabled = false;
+        }
+
+        private void dataGridViewTable_CellContentDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            UserName = Convert.ToString(dataGridViewTable.CurrentCell);
+
+        }
+
+        private void buttonFriends_Click(object sender, EventArgs e)
+        {
+            QueryString = ".friends";
+            FillDGV();
+            domainUpDownSelect.Items.Clear();
+            domainUpDownSelect.Items.Add("UserID2");
+            domainUpDownSelect.Items.Add("UserID");
+            domainUpDownSelect.Items.Add("MessageID");
+
+            domainUpDownUpdate.Items.Clear();
+            domainUpDownUpdate.Items.Add("");
+            domainUpDownUpdate.Items.Add("UserID");
+            domainUpDownUpdate.Items.Add("MessageID");
+
+            buttonAdd.Enabled = true;
+            buttonDelete.Enabled = true;
+
+            domainUpDownDelete.Items.Clear();
+            domainUpDownDelete.Items.Add("UserID2");
+            domainUpDownDelete.Items.Add("UserID");
+            domainUpDownDelete.Items.Add("MessageID");
+        }
+
+        private void buttonMessages_Click(object sender, EventArgs e)
+        {
+            QueryString = ".messages";
+            FillDGV();
+            domainUpDownSelect.Items.Clear();
+            domainUpDownSelect.Items.Add("MessageID");
+            domainUpDownSelect.Items.Add("DateTime");
+            domainUpDownSelect.Items.Add("Message");
+
+            domainUpDownUpdate.Items.Clear();
+            domainUpDownUpdate.Items.Add("");
+            domainUpDownUpdate.Items.Add("DateTime");
+            domainUpDownUpdate.Items.Add("Message");
+
+            buttonAdd.Enabled = true;
+            buttonDelete.Enabled = true;
+
+            domainUpDownDelete.Items.Clear();
+            domainUpDownDelete.Items.Add("MessageID");
+            domainUpDownDelete.Items.Add("DateTime");
+            domainUpDownDelete.Items.Add("Message");
+        }
+
+        private void buttonLocation_Click(object sender, EventArgs e)
+        {
+            QueryString = ".location";
+            FillDGV();
+            domainUpDownSelect.Items.Clear();
+            domainUpDownSelect.Items.Add("LocationID");
+            domainUpDownSelect.Items.Add("WorkplaceID");
+            domainUpDownSelect.Items.Add("UniversityID");
+            domainUpDownSelect.Items.Add("CityName");
+
+            domainUpDownUpdate.Items.Clear();
+            domainUpDownUpdate.Items.Add("");
+            domainUpDownUpdate.Items.Add("WorkplaceID");
+            domainUpDownUpdate.Items.Add("UniversityID");
+            domainUpDownUpdate.Items.Add("CityName");
+
+            buttonAdd.Enabled = false;
+            buttonDelete.Enabled = false;
+        }
+
+        private void buttonWorkplace_Click(object sender, EventArgs e)
+        {
+            QueryString = ".workplace";
+            FillDGV();
+            domainUpDownSelect.Items.Clear();
+            domainUpDownSelect.Items.Add("WorkplaceID");
+            domainUpDownSelect.Items.Add("WorkplaceName");
+
+            domainUpDownUpdate.Items.Clear();
+            domainUpDownUpdate.Items.Add("");
+            domainUpDownUpdate.Items.Add("WorkplaceName");
+
+            buttonAdd.Enabled = false;
+            buttonDelete.Enabled = false;
+        }
+
+        private void buttonUniversity_Click(object sender, EventArgs e)
+        {
+            QueryString = ".university";
+            FillDGV();
+            domainUpDownSelect.Items.Clear();
+            domainUpDownSelect.Items.Add("UniversityID");
+            domainUpDownSelect.Items.Add("UniversityName");
+
+            domainUpDownUpdate.Items.Clear();
+            domainUpDownUpdate.Items.Add("");
+            domainUpDownUpdate.Items.Add("UniversityName");
+
+            buttonAdd.Enabled = false;
+            buttonDelete.Enabled = false;
+        }
+
+        private void FillDGV()
+        {
+            //Code for reading in SQL database
+            /////////////////////////////////////////////////////////////////
+            //
+            // The basic format of a connection string consists of a series
+            // of keyword/value pairs separated by semicolons. The equal
+            // sign (=) connects each keyword and its value. Specifically,
+            // our connection string MUST refer to 
+            // proj-mysql.uopnet.plymouth.ac.uk as the server, and
+            // to our username and password to access
+            // proj-mysql.uopnet.plymouth.ac.uk.
+            //
+            /////////////////////////////////////////////////////////////////
+
+            string connectionString = "SERVER=" + DBConnect.SERVER + ";" +
+                "DATABASE=" + DBConnect.DATABASE_NAME + ";" + "UID=" +
+                DBConnect.USER_NAME + ";" + "PASSWORD=" +
+                DBConnect.PASSWORD + ";" + "SslMode=" +
+                DBConnect.SslMode + ";";
+
+            ///////////////////////////////////////////////////////////////
+            //
+            // Create an open connection to a MySQL Server database. In our
+            // case, the connection allows us to interact with
+            // proj-mysql.uopnet.plymouth.ac.uk.
+            //
+            ///////////////////////////////////////////////////////////////
+
+            using (MySqlConnection connection =
+                new MySqlConnection(connectionString))
+            {
+                ///////////////////////////////////////////////////////////
+                //
+                // The query which retrieves all the records in the
+                // customers table.
+                //
+                ///////////////////////////////////////////////////////////
+                string query = "SELECT * FROM ISAD157_ADenman" + QueryString;
+
+                ///////////////////////////////////////////////////////////
+                //
+                // Opens a database connection with the property settings
+                // specified by the ConnectionString.
+                //
+                ///////////////////////////////////////////////////////////
+                connection.Open();
+
+                ///////////////////////////////////////////////////////////
+                //
+                // Submit the SQL statement to be executed against the
+                // MySQL database.
+                //
+                ///////////////////////////////////////////////////////////
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
+                ///////////////////////////////////////////////////////////
+                //
+                // The MySqlDataAdapter represents a set of data commands
+                // and a database connection that are used to fill a
+                // dataset and update a MySQL database.
+                //
+                ///////////////////////////////////////////////////////////
+                MySqlDataAdapter sqlDA = new MySqlDataAdapter(cmd);
+                DataTable customerDataTable = new DataTable();
+                sqlDA.Fill(customerDataTable);
+
+                ///////////////////////////////////////////////////////////
+                //
+                // Bind the ACME customer table to the Data Grid View.
+                //
+                ///////////////////////////////////////////////////////////
+                dataGridViewTable.DataSource = customerDataTable;
+
+            } // End of using (MySqlConnection connection = ... 
+        } // End of using (MySqlConnection connection = ... 
+
+
+        private void SelectSearch()
+        {
+
+        }
+
+        private void domainUpDownSelect_SelectedItemChanged(object sender, EventArgs e)
+        {
+
+        }
+
+        private void buttonSelect_Click(object sender, EventArgs e)
+        {
+            string SearchInput;
+            string SearchTable;
+            string SearchColumn;
+
+            SearchInput = textBoxSelectSearch.Text;
+            SearchTable = QueryString;
+            SearchColumn = domainUpDownSelect.Text;
+
+            //PASTE SELECT SQL HERE
+            string connectionString = "SERVER=" + DBConnect.SERVER + ";" +
+                "DATABASE=" + DBConnect.DATABASE_NAME + ";" + "UID=" +
+                DBConnect.USER_NAME + ";" + "PASSWORD=" +
+                DBConnect.PASSWORD + ";" + "SslMode=" +
+                DBConnect.SslMode + ";";
+
+            using (MySqlConnection connection =
+                new MySqlConnection(connectionString))
+            {
+
+                string query = "SELECT * FROM ISAD157_ADenman" + SearchTable + " WHERE " + SearchColumn + "=" + "'" + SearchInput + "'"; 
+
+
+                connection.Open();
+
+
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+
+
+                MySqlDataAdapter sqlDA = new MySqlDataAdapter(cmd);
+                DataTable customerDataTable = new DataTable();
+                sqlDA.Fill(customerDataTable);
+
+
+                //OUTPUT HERE
+                dataGridViewTable.DataSource = customerDataTable;
+
+            }
+        }
+
+        private void buttonUpdate_Click(object sender, EventArgs e)
+        {
+            string UpdateInput;
+            string UpdateTable;
+            string UpdateRow;
+
+            UpdateInput = textBoxUpdateInput.Text;
+            UpdateTable = QueryString;
+            UpdateRow = textBoxUpdateNum.Text;
+
+            string connectionString = "SERVER=" + DBConnect.SERVER + ";" +
+                "DATABASE=" + DBConnect.DATABASE_NAME + ";" + "UID=" +
+                DBConnect.USER_NAME + ";" + "PASSWORD=" +
+                DBConnect.PASSWORD + ";" + "SslMode=" +
+                DBConnect.SslMode + ";";
+
+            using (MySqlConnection connection =
+                new MySqlConnection(connectionString))
+            {
+
+                string query = "UPDATE users SET " + domainUpDownUpdate.Text + "=" + "'" + UpdateInput + "' WHERE UserID=" + UpdateRow;
+
+
+                connection.Open();
+
+
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void buttonAdd_Click(object sender, EventArgs e)
+        {
+            string query;
+            string connectionString = "SERVER=" + DBConnect.SERVER + ";" +
+                "DATABASE=" + DBConnect.DATABASE_NAME + ";" + "UID=" +
+                DBConnect.USER_NAME + ";" + "PASSWORD=" +
+                DBConnect.PASSWORD + ";" + "SslMode=" +
+                DBConnect.SslMode + ";";
+
+            using (MySqlConnection connection =
+                new MySqlConnection(connectionString))
+            {
+                if (QueryString==".friends")
+                {
+                    query = "INSERT INTO friends (UserID2, UserID, MessageID) VALUES (" + textBoxUserID2MessageID.Text + ", " + textBoxUserIDDateTime.Text + ", " + textBoxMessageIDMessage.Text + ")";
+
+                }
+                else
+                {
+                    query = "INSERT INTO messages (MessageID, DateTime, Message) VALUES (" + textBoxUserID2MessageID.Text + ", " + textBoxUserIDDateTime.Text + ", " + textBoxMessageIDMessage.Text + ")";
+                }
+                
+
+
+                connection.Open();
+
+
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.ExecuteNonQuery();
+            }
+        }
+
+        private void buttonDelete_Click(object sender, EventArgs e)
+        {
+            string connectionString = "SERVER=" + DBConnect.SERVER + ";" +
+             "DATABASE=" + DBConnect.DATABASE_NAME + ";" + "UID=" +
+             DBConnect.USER_NAME + ";" + "PASSWORD=" +
+             DBConnect.PASSWORD + ";" + "SslMode=" +
+             DBConnect.SslMode + ";";
+
+            using (MySqlConnection connection =
+                new MySqlConnection(connectionString))
+            {
+
+                string query = "DELETE FROM messages WHERE " + domainUpDownDelete.Text + "=" + textBoxDelete.Text;
+
+
+                connection.Open();
+
+
+                MySqlCommand cmd = new MySqlCommand(query, connection);
+                cmd.ExecuteNonQuery();
+            }
+        }
+    }
+
+
+
+
+
+    class DBConnect
+    {
+        /// <summary>
+        /// The username that we use when connecting to the server. It has the form
+        /// soft562_<your name>.
+        /// </summary>
+        internal const string USER_NAME = "ISAD157_ADenman";
+
+        /// <summary>
+        /// The name or network address of the server. The default value is
+        /// 'localhost', but in our case this will be proj-mysql.uopnet.plymouth.ac.uk.
+        /// </summary>
+        internal const string SERVER = "proj-mysql.uopnet.plymouth.ac.uk";
+
+        /// <summary>
+        /// The name of the database to use. Recall that the names of databases
+        /// on Xserve have the form isad157_<your name>.
+        /// </summary>
+        internal const string DATABASE_NAME = "ISAD157_ADenman";
+
+        /// <summary>
+        /// The password for the MySQL account being used.
+        /// </summary>
+        internal const string PASSWORD = "ISAD157_22224125";
+
+        /// <summary>
+        /// Security state of connection to server.
+        /// </summary>
+        internal const string SslMode = "none";
+
+    }
+}// End of class DBConnect
